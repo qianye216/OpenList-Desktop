@@ -1,0 +1,47 @@
+{
+    "Alist": {
+        "alistAutoStartUp": false,
+        "httpProxy": "",
+        "startupParams": [
+            "--force-bin-dir"
+        ],
+        "workDirectory": ""
+    },
+    "StartUp": {
+        "CheckUpdateAtStartUp": true,
+        "githubProxy": "",
+        "githubToken": "",
+        "mainAutoStartUp": false,
+        "quietAutoStartUp": false,
+        "trayIcon": true
+    },
+    "MainWindow": {
+        "DpiScale": "Auto",
+        "firstMountTipShown": false,
+        "followSystemThemeColor": true,
+        "hideDockIcon": true,
+        "Language": "zh_CN",
+        "MicaEnabled": false,
+        "proxyServer": "Auto",
+        "windowSize": "960,700"
+    },
+    "Rclone": {
+        "mountConfigs": "[]",
+        "rcloneAutoStartUp": false,
+        "startAfterAlist": false,
+        "startupParams": [
+            "rcd",
+            "--rc-user",
+            "admin",
+            "--rc-pass",
+            "admin",
+            "--rc-web-gui-no-open-browser"
+        ],
+        "webDavAccount": "{}",
+        "workDirectory": ""
+    },
+    "QFluentWidgets": {
+        "ThemeColor": "#ff009faa",
+        "ThemeMode": "Auto"
+    }
+}

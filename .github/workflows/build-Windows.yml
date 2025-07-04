@@ -1,0 +1,120 @@
+# 工作流名称：构建 Windows 版本
+name: Build Windows
+
+# 触发条件
+on:
+  # 允许手动触发此工作流
+  workflow_dispatch:
+
+# 任务定义
+jobs:
+  # 任务ID：在 Windows Server 2022 上构建
+  build-windows:
+    # 构建策略
+    strategy:
+      # 如果矩阵中的一个任务失败，不立即取消其他任务
+      fail-fast: false
+      # 定义构建矩阵
+      matrix:
+        # 架构变量，当前仅包含 x64
+        architecture: [x64] # 常见的 Windows 架构是 x64 (amd64)
+
+    # 运行环境：指定使用最新的 Windows Server 虚拟机
+    runs-on: windows-latest
+    
+    # 任务步骤
+    steps:
+      # 步骤1：检出代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 步骤2：设置 Python 3.11 环境
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # 步骤3：安装依赖项
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      # 步骤4：下载并准备外部工具 (!!! Windows 版本关键改动 !!!)
+      - name: Download and prepare external tools
+        # 使用 PowerShell，这是 Windows runner 的默认 shell
+        shell: pwsh
+        run: |
+          # 设置变量 (使用 PowerShell 语法)
+          # 注意：请确认并替换为正确的 Windows 版本下载链接
+          $OPENLIST_URL="https://github.com/OpenListTeam/OpenList/releases/download/v4.0.8/openlist-windows-amd64.zip"
+          $RCLONE_URL="https://github.com/rclone/rclone/releases/download/v1.70.2/rclone-v1.70.2-windows-amd64.zip"
+          $DEST_DIR="tools"
+          $TEMP_DIR = Join-Path $env:RUNNER_TEMP "downloads"
+
+          # 创建目标和临时目录
+          New-Item -ItemType Directory -Force -Path $DEST_DIR
+          New-Item -ItemType Directory -Force -Path $TEMP_DIR
+
+          # 下载 OpenList 工具包
+          echo "Downloading OpenList from $OPENLIST_URL..."
+          Invoke-WebRequest -Uri $OPENLIST_URL -OutFile (Join-Path $TEMP_DIR "openlist.zip")
+
+          # 下载 Rclone 工具包
+          echo "Downloading Rclone from $RCLONE_URL..."
+          Invoke-WebRequest -Uri $RCLONE_URL -OutFile (Join-Path $TEMP_DIR "rclone.zip")
+
+          # 解压缩并移动可执行文件
+          # Windows 的 zip 包通常包含一个目录层级，我们需要从中提取 .exe 文件
+          echo "Extracting OpenList..."
+          Expand-Archive -Path (Join-Path $TEMP_DIR "openlist.zip") -DestinationPath (Join-Path $TEMP_DIR "openlist_extracted")
+          # 从解压后的子目录中找到 openlist.exe 并移动到 tools/ 目录
+          Get-ChildItem -Path (Join-Path $TEMP_DIR "openlist_extracted") -Filter "openlist.exe" -Recurse | Move-Item -Destination $DEST_DIR
+
+          echo "Extracting Rclone..."
+          Expand-Archive -Path (Join-Path $TEMP_DIR "rclone.zip") -DestinationPath (Join-Path $TEMP_DIR "rclone_extracted")
+          # 从解压后的子目录中找到 rclone.exe 并移动到 tools/ 目录
+          Get-ChildItem -Path (Join-Path $TEMP_DIR "rclone_extracted") -Filter "rclone.exe" -Recurse | Move-Item -Destination $DEST_DIR
+          
+          # 清理临时下载和解压文件
+          Remove-Item -Path $TEMP_DIR -Recurse -Force
+
+          # 打印目录内容以供调试
+          echo "Tools are ready in the 'tools' directory."
+          Get-ChildItem $DEST_DIR
+
+      # 步骤5：使用 PyInstaller 进行构建
+      - name: Build with PyInstaller
+        shell: pwsh
+        run: |
+          # 从 Python 文件中读取版本号 (使用 PowerShell 语法)
+          $VERSION = python -c "from app.common.setting import VERSION; print(VERSION)"
+          # 将版本号设置为后续步骤可用的环境变量
+          "VERSION=$VERSION" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          
+          # 运行 PyInstaller 部署脚本
+          # 此时 'tools' 目录已存在，PyInstaller 会将其正确打包
+          python deploy_pyinstaller.py
+          
+          # 删除 PyInstaller 生成的临时构建文件夹
+          Remove-Item -Path "build" -Recurse -Force
+
+      # 步骤6：创建 Zip 压缩包 (Windows 替代 DMG)
+      - name: Create ZIP archive
+        shell: pwsh
+        run: |
+          # Windows 上通常使用 .zip 作为分发包，而不是 .dmg
+          # PyInstaller 生成的程序目录通常在 dist/ 文件夹下
+          $SOURCE_DIR = "dist/OpenList-Desktop" # 假设 PyInstaller 生成的目录名为 OpenList-Desktop
+          $ZIP_FILENAME = "OpenList-Desktop-v${{ env.VERSION }}-Windows-${{ matrix.architecture }}.zip"
+          
+          # 使用 PowerShell 内置命令创建 Zip 文件
+          Compress-Archive -Path "$SOURCE_DIR\*" -DestinationPath $ZIP_FILENAME -Force
+
+      # 步骤7：上传构建产物
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          # 构建产物名称
+          name: OpenList-Desktop-v${{ env.VERSION }}-Windows-${{ matrix.architecture }}
+          # 要上传的文件路径
+          path: OpenList-Desktop-v${{ env.VERSION }}-Windows-${{ matrix.architecture }}.zip
