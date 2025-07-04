@@ -1,0 +1,114 @@
+# 工作流名称：构建 macOS Intel 版本
+name: Build macOS Intel
+
+# 触发条件
+on:
+  # 允许手动触发此工作流
+  workflow_dispatch:
+
+# 任务定义
+jobs:
+  # 任务ID：在 macOS 13 (Intel架构) 上构建
+  build-macos-13-intel:
+    # 构建策略
+    strategy:
+      # 如果矩阵中的一个任务失败，不立即取消其他任务
+      fail-fast: false
+      # 定义构建矩阵
+      matrix:
+        # 架构变量，当前仅包含 x64 (Intel)
+        architecture: [x64]
+    # 运行环境：指定使用 macOS 13 系统的虚拟机 (Intel)
+    runs-on: macos-13
+    # 任务步骤
+    steps:
+      # 步骤1：检出代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 步骤2：设置 Python 3.11 环境
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # 步骤3：安装依赖项
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      # 步骤4：下载并准备外部工具 (Intel 版本)
+      - name: Download and prepare external tools
+        run: |
+          # 设置变量 - 使用 Intel 版本的下载链接
+          OPENLIST_URL="https://github.com/OpenListTeam/OpenList/releases/download/v4.0.8/openlist-darwin-amd64.tar.gz"
+          RCLONE_URL="https://github.com/rclone/rclone/releases/download/v1.70.2/rclone-v1.70.2-osx-amd64.zip"
+          # 目标目录是项目根目录下的 'tools' 文件夹
+          DEST_DIR="tools"
+
+          # 创建目标目录
+          mkdir -p "$DEST_DIR"
+
+          # 下载OpenList工具包 (Intel版本)
+          echo "Downloading OpenList from $OPENLIST_URL..."
+          curl -L "$OPENLIST_URL" -o "/tmp/openlist.tar.gz"
+
+          # 解压缩 OpenList tar.gz 文件
+          echo "Extracting OpenList..."
+          tar -xzf "/tmp/openlist.tar.gz" -C "$DEST_DIR" 
+
+          # 下载Rclone工具包 (Intel版本)
+          echo "Downloading Rclone from $RCLONE_URL..."
+          curl -L "$RCLONE_URL" -o "/tmp/rclone.zip"
+
+          # 解压缩 Rclone zip 文件
+          echo "Extracting Rclone..."
+          unzip -j "/tmp/rclone.zip" "*/rclone" -d "$DEST_DIR"
+
+          # 删除压缩包
+          rm "/tmp/openlist.tar.gz"
+          rm "/tmp/rclone.zip"
+
+          # 设置可执行权限
+          # chmod +x "$DEST_DIR/openlist"
+          # chmod +x "$DEST_DIR/rclone"
+
+          echo "Tools are ready in the 'tools' directory."
+          ls -l $DEST_DIR # 打印目录内容以供调试
+
+      # 步骤5：使用 PyInstaller 进行构建
+      - name: Build with PyInstaller
+        run: |
+          # 从 Python 文件中读取版本号
+          VERSION=$(python3 -c "from app.common.setting import VERSION; print(VERSION)")
+          # 将版本号设置为后续步骤可用的环境变量
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          
+          # 运行PyInstaller部署脚本
+          # 此时 'tools' 目录已存在，PyInstaller 会将其正确打包
+          python deploy_pyinstaller.py
+          
+          # 删除 PyInstaller 生成的临时构建文件夹
+          rm -rf "build"
+
+      # 步骤6：创建 DMG 磁盘映像文件
+      - name: Create DMG
+        run: |
+          mkdir -p dmg_contents
+          cp -R "dist/OpenList-Desktop.app" "dmg_contents/"
+          ln -s /Applications dmg_contents/Applications
+
+          # 使用 hdiutil 命令创建 DMG 文件
+          hdiutil create -srcfolder "dmg_contents/" -volname "OpenList-Desktop" -fs HFS+ \
+              -fsargs "-c c=64,a=16,e=16" -format UDZO -size 400m \
+              "OpenList-Desktop-v${{ env.VERSION }}-macOS-${{ matrix.architecture }}.dmg"
+
+          # 清理临时目录
+          rm -rf dmg_contents
+
+      # 步骤7：上传构建产物
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenList-Desktop-v${{ env.VERSION }}-macOS-${{ matrix.architecture }}
+          path: OpenList-Desktop-v${{ env.VERSION }}-macOS-${{ matrix.architecture }}.dmg
