@@ -157,16 +157,15 @@ def checkAlistExist(directory):
     """检查目录下是否存在Alist主程序"""
     # 检查Windows系统
     if sys.platform == "win32":
-        # 判断是否存在alist.exe文件，使用pathlib库
         if (
-            Path(directory, "alist.exe").exists()
-            or Path(directory, "openlist").exists()
+            Path(directory, "openlist.exe").exists()
+            or Path(directory, "alist.exe").exists()
         ):
             return True
 
     # 检查MacOS系统
     elif sys.platform == "darwin":
-        if Path(directory, "alist").exists() or Path(directory, "openlist").exists():
+        if Path(directory, "openlist").exists() or Path(directory, "alist").exists():
             return True
         
 
