@@ -1,7 +1,7 @@
 <!--
  * @Author: qianye
- * @Date: 2025-06-08 20:32:52
- * @LastEditTime: 2025-07-05 09:47:50
+ * @Date: 2025-07-04 14:51:29
+ * @LastEditTime: 2025-07-05 09:49:48
  * @Description: 
 -->
 # OpenList Desktop
@@ -21,80 +21,80 @@
 
 ---
 
-[简体中文](./README.zh-CN.md) | [English](./README.md)
+[简体中文](./README.md) | [English](./README_en.md)
 
-## 📖 Introduction
+## 📖 简介
 
-**OpenList Desktop** is a cross-platform desktop client designed for [OpenList (Alist)](https://github.com/OpenListTeam/OpenList) and [Rclone](https://rclone.org/). It provides a modern and user-friendly graphical interface to help you easily manage the Alist service and Rclone mounts without needing to remember and type complex command-line instructions.
+**OpenList Desktop** 是一个为 [OpenList (Alist)](https://github.com/OpenListTeam/OpenList) 和 [Rclone](https://rclone.org/) 设计的跨平台桌面客户端。它提供了一个现代化且用户友好的图形界面，帮助您轻松管理 Alist 服务和 Rclone 云盘挂载，无需记忆和输入繁琐的命令行指令。
 
-This project is built with Python and [PySide6](https://www.qt.io/qt-for-python), and utilizes the [QFluentWidgets](https://github.com/zhiyiYo/PyQt-Fluent-Widgets) library for a beautiful and smooth user experience.
+本项目基于 Python 和 [PySide6](https://www.qt.io/qt-for-python) 构建，并使用了 [QFluentWidgets](https://github.com/zhiyiYo/PyQt-Fluent-Widgets) 组件库，确保了美观流畅的用户体验。
 
-## ✨ Features
+## ✨ 功能特性
 
-- **Alist Service Management**: Easily start, stop, and restart the Alist service.
-- **Rclone Core Service**: Manage Rclone's core `rcd` service, which powers all mounting operations.
-- **Parameterized Configuration**: A graphical interface for configuring startup parameters for both Alist and Rclone.
-- **Cloud Drive Mounting**: Create and manage cloud drive mounts via Rclone's HTTP API, mapping cloud storage as a local drive.
-- **System Integration**: System tray support, with an option to hide the Dock icon on macOS for true background operation.
-- **Auto-Startup**: Configure the application to launch on system boot, with support for silent startup.
-- **Automatic Updates**: Built-in update checker for the application itself, Alist, and Rclone.
-- **Personalized Themes**: Supports Light, Dark, and System-following themes, with customizable accent colors.
+- **Alist 服务管理**: 轻松启动、停止和重启 Alist 服务。
+- **Rclone 核心服务**: 管理 Rclone 的核心 `rcd` 服务，为所有挂载操作提供支持。
+- **参数化配置**: 为 Alist 和 Rclone 提供图形化的启动参数配置界面。
+- **云盘挂载**: 通过 Rclone 的 HTTP API 创建和管理云盘挂载，将云存储映射为本地磁盘。
+- **系统集成**: 支持系统托盘，并可在 macOS 上隐藏 Dock 图标，实现真正的后台运行。
+- **开机自启**: 可配置应用随系统启动，并支持静默启动。
+- **自动更新**: 内置应用本身、Alist 和 Rclone 的更新检查器。
+- **个性化主题**: 支持浅色、深色和跟随系统设置的主题，并允许自定义主题色。
 
-## 🖼️ Screenshots
+## 🖼️ 截图
 
 ![Screenshot 1](docs/screenshot/主界面.png)
 
-## 🚀 Installation and Usage
+## 🚀 安装与使用
 
-### 1. Download the Application
+### 1. 下载应用
 
-Download the latest version for your operating system from the [GitHub Releases](https://github.com/qianye216/OpenList-Desktop/releases) page.
+从 [GitHub Releases](https://github.com/qianye216/OpenList-Desktop/releases) 页面下载适用于您操作系统的最新版本。
 
-### 2. Prerequisites
+### 2. 准备依赖
 
-#### For Rclone Mounting
+#### Rclone 挂载先决条件
 
-To use the Rclone mount feature, you need to install the following dependencies first:
+为了使用 Rclone 的挂载功能，您需要预先安装以下依赖：
 
-- **Windows**: Install [WinFsp](https://winfsp.dev/rel/) (Windows File System Proxy).
-- **macOS**: Install [macFUSE](https://osxfuse.github.io/).
-- **Linux**: Install `fuse` using your package manager. For example, on Debian/Ubuntu, run `sudo apt-get install fuse`.
+- **Windows**: 安装 [WinFsp](https://winfsp.dev/rel/) (Windows File System Proxy)。
+- **macOS**: 安装 [macFUSE](https://osxfuse.github.io/)。
+- **Linux**: 通过您的包管理器安装 `fuse`。例如，在 Debian/Ubuntu 上运行 `sudo apt-get install fuse`。
 
-#### Alist & Rclone Executables
+#### Alist & Rclone 可执行文件
 
-Place your downloaded `alist` (or `openlist`) and `rclone` executables into any directory on your computer.
+将您下载的 `alist` (或 `openlist`) 和 `rclone` 可执行文件放置在您电脑的任意目录中。
 
-### 3. Configure the Application
+### 3. 配置应用
 
-1.  Run **OpenList Desktop** for the first time.
-2.  Navigate to **Settings** -> **OpenList Settings**.
-3.  Click the "Select" button next to **Working Directory** and choose the folder where your `alist` executable is located.
-4.  Navigate to **Settings** -> **Rclone Settings**.
-5.  Click the "Select" button next to **Working Directory** and choose the folder where your `rclone` executable is located.
-6.  After configuration, you can start and manage the services from the Home and Mount pages.
+1.  首次运行 **OpenList Desktop**。
+2.  导航到 **设置** -> **OpenList设置**。
+3.  点击 **工作目录** 旁的 "选择" 按钮，选择您存放 `alist` 可执行文件的文件夹。
+4.  导航到 **设置** -> **Rclone设置**。
+5.  点击 **工作目录** 旁的 "选择" 按钮，选择您存放 `rclone` 可执行文件的文件夹。
+6.  完成配置后，您就可以在主页和挂载页面启动并管理相关服务了。
 
-## 🏗️ Project Structure
+## 🏗️ 项目结构
 
 ```
 root
-|  main.py                (Entry script)
-|  requirements.txt         (Dependency file)
+|  main.py                (入口脚本)
+|  requirements.txt         (依赖文件)
 |
 └─app
-    ├─common                (Common modules: config, signal bus, utils, etc.)
-    ├─components            (Custom UI components)
-    ├─resource              (Resource files: icons, qss, i18n files)
-    ├─services              (Core services: Alist and Rclone managers)
-    └─view                  (UI Views: main window, sub-interfaces)
+    ├─common                (通用模块: 配置, 信号总线, 工具函数等)
+    ├─components            (自定义UI组件)
+    ├─resource              (资源文件: 图标, qss, 国际化文件)
+    ├─services              (核心服务: Alist和Rclone管理器)
+    └─view                  (界面视图: 主窗口, 各子界面)
 ```
 
-## 📄 License
+## 📄 开源许可
 
-This project is licensed under the [GPL-3.0 License](./LICENSE).
+本项目基于 [GPL-3.0 License](./LICENSE) 开源。
 
-## 🙏 Acknowledgments
+## 🙏 致谢
 
-- [OpenList (Alist)](https://github.com/OpenListTeam/OpenList): A powerful list program.
+- [OpenList (Alist)](https://github.com/OpenListTeam/OpenList): 强大的列表程序。
 - [Rclone](https://rclone.org/): The Swiss army knife of cloud storage.
-- [QFluentWidgets](https://github.com/zhiyiYo/PyQt-Fluent-Widgets): An amazing Qt component library.
-- All developers who have contributed to this project.
+- [QFluentWidgets](https://github.com/zhiyiYo/PyQt-Fluent-Widgets): 一个令人惊艳的 Qt 组件库。
+- 所有为本项目做出贡献的开发者。
