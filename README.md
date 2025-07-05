@@ -1,7 +1,7 @@
 <!--
  * @Author: qianye
  * @Date: 2025-06-08 20:32:52
- * @LastEditTime: 2025-07-04 15:03:36
+ * @LastEditTime: 2025-07-05 09:47:50
  * @Description: 
 -->
 # OpenList Desktop
@@ -21,7 +21,7 @@
 
 ---
 
-[English](./README.md) | [简体中文](./README.zh-CN.md)
+[简体中文](./README.zh-CN.md) | [English](./README.md)
 
 ## 📖 Introduction
 
