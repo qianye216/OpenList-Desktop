@@ -30,5 +30,6 @@ download/
 
 # 忽略构建文件夹
 .DS_Store
+*/.DS_Store
 build/
 dist/
