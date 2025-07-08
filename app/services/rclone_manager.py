@@ -587,12 +587,23 @@ class RcloneManager(QObject):
     def _ensure_webdav_remote(self):
         """确保 WebDAV 远程配置存在"""
         response = self._send_rc_command("/config/listremotes")
-        if response and "remotes" in response:
-            if "webdav" not in response["remotes"]:
+        
+        # [修复] 检查 response 是否有效，以及 "remotes" 键的值是否为列表。
+        # 这可以防止因 API 返回 {"remotes": null} 或其他意外格式而导致的 TypeError。
+        if response and isinstance(response.get("remotes"), list):
+            remotes_list = response["remotes"]
+            if "webdav" not in remotes_list:
                 self.logMessageReady.emit("未找到 'webdav' 远程配置，正在自动创建...")
                 self.create_webdav_remote("webdav")
             else:
                 self.logMessageReady.emit("WebDAV 远程配置已存在。")
+        else:
+            # 如果 response 不为 None 但格式不正确，则记录日志。
+            # 如果 response 本身是 None，则 _send_rc_command 内部已经发出了错误信号。
+            if response:
+                error_info = response.get("error", f"API响应格式不正确: {response}")
+                self.logMessageReady.emit(f"检查 WebDAV 配置失败：{error_info}")
+            # 在无法确认远程列表的情况下，不执行任何操作，避免引入更多问题。
 
     def _obscure_password(self, password: str) -> str:
         """使用rclone obscure命令加密密码"""
