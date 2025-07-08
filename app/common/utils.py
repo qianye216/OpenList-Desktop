@@ -17,6 +17,13 @@ import psutil
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
 
+if platform.system() == "Windows":
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startupinfo.wShowWindow = subprocess.SW_HIDE
+else:
+    startupinfo = None
+
 def get_app_path():
     """
     使用 pathlib 获取程序根目录，兼容脚本和打包情况。
@@ -39,10 +46,10 @@ def get_app_path():
 def openLocalFile(file_path):
     if platform.system() == "Windows":
         # Windows 使用 Explorer 打开文件夹并选中文件
-        subprocess.Popen(['explorer', '/select,', file_path])
+        subprocess.run(['explorer', '/select,', file_path])
     elif platform.system() == "Darwin":
         # macOS 使用 Finder 打开文件夹并选中文件
-        subprocess.Popen(['open', '-R', file_path])
+        subprocess.run(['open', '-R', file_path])
 
 def getSystemProxy() -> Optional[str]:
     """
@@ -142,6 +149,13 @@ def _get_macos_proxy() -> Optional[str]:
         
     return None
 
+def openConfigFile(file_path):
+    if platform.system() == 'Darwin':
+        #打开配置文件
+        subprocess.run(['open',"-a", "TextEdit",file_path])
+        
+    else:
+        subprocess.run(['start','notepad',file_path],startupinfo=startupinfo,shell=True)
 
 def openUrl(url: str):
     if not url.startswith("http"):
@@ -288,13 +302,8 @@ def killAlistProcess():
                     # Windows系统使用taskkill命令
                     cmd = ["taskkill", "/F", "/IM", target_process, "/T"]
                     
-                    # Windows下禁用命令行窗口
-                    startupinfo = subprocess.STARTUPINFO()
-                    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                    startupinfo.wShowWindow = subprocess.SW_HIDE
-                    
                     # 使用Popen执行命令
-                    process = subprocess.Popen(
+                    process = subprocess.run(
                         cmd,
                         startupinfo=startupinfo,
                         creationflags=subprocess.CREATE_NO_WINDOW
@@ -306,7 +315,7 @@ def killAlistProcess():
                     cmd = ["killall", "-9", base_process]
                     
                     # 使用Popen执行命令
-                    process = subprocess.Popen(cmd)
+                    process = subprocess.run(cmd)
                 
                 result['command'].append(' '.join(cmd))
                 
@@ -377,14 +386,9 @@ def killRcloneProcess():
         if sys.platform == "win32":
             # Windows系统使用taskkill命令
             cmd = ["taskkill", "/F", "/IM", "rclone.exe", "/T"]
-            
-            # Windows下禁用命令行窗口
-            startupinfo = subprocess.STARTUPINFO()
-            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            startupinfo.wShowWindow = subprocess.SW_HIDE
-            
+
             # 使用Popen执行命令
-            process = subprocess.Popen(
+            process = subprocess.run(
                 cmd,
                 startupinfo=startupinfo,
                 creationflags=subprocess.CREATE_NO_WINDOW
@@ -395,7 +399,7 @@ def killRcloneProcess():
             cmd = ["killall", "-9", "rclone"]
             
             # 使用Popen执行命令
-            process = subprocess.Popen(cmd)
+            process = subprocess.run(cmd)
         
         result['command'] = ' '.join(cmd)
         

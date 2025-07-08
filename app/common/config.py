@@ -10,7 +10,6 @@ import json
 import re
 import sys
 from enum import Enum
-from pathlib import Path
 
 from PySide6.QtCore import QLocale
 from qfluentwidgets import (

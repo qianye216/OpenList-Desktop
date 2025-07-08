@@ -10,7 +10,7 @@ from PySide6.QtCore import QObject, QProcess, QUrl, Signal
 from PySide6.QtGui import QDesktopServices
 
 from ..common.config import cfg
-from ..common.utils import checkAlistExist, getAlistPath
+from ..common.utils import checkAlistExist, getAlistPath, openConfigFile
 
 
 class AlistService(QObject):
@@ -204,8 +204,7 @@ class AlistService(QObject):
 
         config_file = data_path / "config.json"
         if config_file.exists() and config_file.is_file():
-            url = QUrl.fromLocalFile(config_file.resolve().as_posix())
-            QDesktopServices.openUrl(url)
+            openConfigFile(config_file)
         else:
             self.operationFailed.emit("未找到配置文件！")
 
