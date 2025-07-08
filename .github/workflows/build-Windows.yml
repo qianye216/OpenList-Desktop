@@ -102,14 +102,21 @@ jobs:
       - name: Create ZIP archive
         shell: pwsh
         run: |
-          # Windows 上通常使用 .zip 作为分发包，而不是 .dmg
-          # PyInstaller 生成的程序目录通常在 dist/ 文件夹下
-          $SOURCE_DIR = "dist/OpenList-Desktop" # 假设 PyInstaller 生成的目录名为 OpenList-Desktop
-          $ZIP_FILENAME = "OpenList-Desktop-v${{ env.VERSION }}-Windows-${{ matrix.architecture }}.zip"
+          # 定义源目录和最终的 Zip 文件名
+          $SOURCE_DIR = "dist/OpenList-Desktop"
+          # 使用绝对路径来定义输出文件，避免因切换目录导致找不到路径
+          $ZIP_FILENAME = "${{ github.workspace }}/OpenList-Desktop-v${{ env.VERSION }}-Windows-${{ matrix.architecture }}.zip"
           
-          # 使用 PowerShell 内置命令创建 Zip 文件
-          Compress-Archive -Path "$SOURCE_DIR\*" -DestinationPath $ZIP_FILENAME -Force
-
+          # ------------------- 关键改动 -------------------
+          # 1. 切换工作目录到 PyInstaller 的输出目录
+          Set-Location -Path $SOURCE_DIR
+          
+          # 2. 从这个目录内部，压缩所有内容（用 '.\*' 表示当前目录下的所有项目）
+          #    由于目标路径是绝对路径，所以可以安全地在这里创建压缩包
+          Compress-Archive -Path ".\*" -DestinationPath $ZIP_FILENAME -Force
+          # -----------------------------------------------
+          
+          echo "Successfully created ZIP archive at $ZIP_FILENAME"
       # 步骤7：上传构建产物
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
