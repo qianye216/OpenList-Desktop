@@ -11,6 +11,8 @@ from qfluentwidgets import (
     setFont,
 )
 
+from app.common.setting import OPENLIST_CONFIG_FOLDER
+
 
 class AlistParameterDialog(MessageBoxBase):
     """
@@ -44,8 +46,13 @@ class AlistParameterDialog(MessageBoxBase):
         self.viewLayout.addWidget(StrongBodyLabel("数据目录参数 (互斥)"))
         data_layout = QHBoxLayout()
         self.data_checkbox = CheckBox("--data")
-        self.data_checkbox.setEnabled(False)  # 初始时路径为空，禁用
+        # 默认设置为启用状态
+        self.data_checkbox.setEnabled(True)
+        # 默认勾选
+        self.data_checkbox.setChecked(True)
         self.data_path_edit = LineEdit()
+        # 设置默认路径为OPENLIST_CONFIG_FOLDER
+        self.data_path_edit.setText(str(OPENLIST_CONFIG_FOLDER))
         self.data_path_edit.setPlaceholderText("请输入或选择数据文件夹路径")
         self.browse_button = PrimaryPushButton("浏览...")
         data_layout.addWidget(self.data_checkbox)
@@ -54,6 +61,8 @@ class AlistParameterDialog(MessageBoxBase):
         self.viewLayout.addLayout(data_layout)
 
         self.force_bin_dir_checkbox = CheckBox("--force-bin-dir")
+        # 由于--data已勾选，--force-bin-dir应默认不勾选
+        self.force_bin_dir_checkbox.setChecked(False)
         self.viewLayout.addWidget(self.force_bin_dir_checkbox)
 
         # --- 调试模式参数组 (水平布局) ---

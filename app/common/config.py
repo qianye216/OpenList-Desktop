@@ -23,7 +23,7 @@ from qfluentwidgets import (
     qconfig,
 )
 
-from .setting import CONFIG_FILE
+from .setting import CONFIG_FILE, OPENLIST_CONFIG_FOLDER
 from .utils import get_app_path
 
 
@@ -202,7 +202,7 @@ class Config(QConfig):
     alistAutoStartUp = ConfigItem("Alist", "alistAutoStartUp", False, BoolValidator())
     alistWorkDirectory = ConfigItem("Alist", "workDirectory", str(get_app_path() / "tools"))
     alistHttpProxy = ConfigItem("Alist", "httpProxy", "")
-    alistStartupParams = ConfigItem("Alist", "startupParams", ["--force-bin-dir"])
+    alistStartupParams = ConfigItem("Alist", "startupParams", ["--data", str(OPENLIST_CONFIG_FOLDER)])
 
     # Rclone设置
     rcloneAutoStartUp = ConfigItem(

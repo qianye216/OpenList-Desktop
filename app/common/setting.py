@@ -1,7 +1,7 @@
 """
 Author: qianye
 Date: 2025-07-05 06:46:15
-LastEditTime: 2025-07-08 09:44:57
+LastEditTime: 2025-07-08 15:34:23
 Description:
 """
 
@@ -45,3 +45,8 @@ CONFIG_FOLDER = (
 # 确保配置目录存在
 CONFIG_FOLDER.mkdir(parents=True, exist_ok=True)
 CONFIG_FILE = CONFIG_FOLDER / "config.json"
+
+# 添加OpenList配置文件夹路径定义
+OPENLIST_CONFIG_FOLDER = CONFIG_FOLDER / "openlist_config"
+# 确保OpenList配置目录存在
+OPENLIST_CONFIG_FOLDER.mkdir(parents=True, exist_ok=True)
