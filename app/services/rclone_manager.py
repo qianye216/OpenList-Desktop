@@ -505,7 +505,10 @@ class RcloneManager(QObject):
         mount_point = mount_config.get("mount_point")
         if not mount_point:
             return {"success": False, "message": "挂载失败: 未提供 'mount_point'。"}
-
+        
+        # 在挂载前确保 WebDAV 配置存在
+        self._ensure_webdav_remote()
+        
         # 平台兼容性处理：Windows盘符需要加冒号
         if (
             platform.system() == "Windows"
@@ -515,7 +518,7 @@ class RcloneManager(QObject):
             mount_point_os = f"{mount_point}:"
         else:
             mount_point_os = mount_point
-
+    
         # 构建API请求的 payload
         fs_value = mount_config["fs"]
         payload = {
@@ -533,10 +536,10 @@ class RcloneManager(QObject):
                 ),
             },
         }
-
+    
         self.logMessageReady.emit(f"发送挂载请求到API: {payload}")
         response = self._send_rc_command("/mount/mount", payload)
-
+    
         if "error" not in response:
             self.logMessageReady.emit(f"挂载请求已成功发送: {mount_point}")
             QTimer.singleShot(1000, self.refresh_mounts_info)  # 延迟刷新状态
