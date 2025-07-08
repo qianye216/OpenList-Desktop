@@ -11,6 +11,7 @@ from PySide6.QtGui import QDesktopServices
 
 from ..common.config import cfg
 from ..common.utils import checkAlistExist, getAlistPath, openConfigFile
+from ..common.signal_bus import signalBus
 
 
 class AlistService(QObject):
@@ -203,6 +204,7 @@ class AlistService(QObject):
             return
 
         config_file = data_path / "config.json"
+        signalBus.warning_Signal.emit("配置文件路径："+str(config_file))
         if config_file.exists() and config_file.is_file():
             openConfigFile(config_file)
         else:

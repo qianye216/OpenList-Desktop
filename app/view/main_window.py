@@ -515,12 +515,19 @@ class MainWindow(MSFluentWindow):
                     # self.themeListener.deleteLater()
             else:
                 # 非 Mac 系统保持原有行为
-                self.systemTrayIcon.showMessage(
+                if event.spontaneous():
+                    self.systemTrayIcon.showMessage(
                     "应用仍在运行",
                     "应用已最小化到系统托盘，单击图标可恢复。",
                     InfoBarIcon.INFORMATION.icon(),
                     3000,
                 )
+                else:
+                    rcloneManager.cleanup() # 清理rclone进程
+                    # 停止监听器线程
+                    # self.themeListener.terminate()
+                    # self.themeListener.deleteLater()
+                
         else:
             self.message_box = MessageBox(
                 self.tr("温馨提示"), self.tr("确定要关闭该程序吗？"), self
