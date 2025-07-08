@@ -2,6 +2,7 @@
 
 import re
 import subprocess
+import sys
 import traceback
 from pathlib import Path
 from typing import Optional
@@ -10,9 +11,12 @@ from PySide6.QtCore import QObject, QProcess, QUrl, Signal
 from PySide6.QtGui import QDesktopServices
 
 from ..common.config import cfg
-from ..common.utils import checkAlistExist, getAlistPath, openConfigFile
 from ..common.signal_bus import signalBus
+from ..common.utils import checkAlistExist, getAlistPath, openConfigFile
 
+creationflags = 0
+if sys.platform == "win32":
+    creationflags = subprocess.CREATE_NO_WINDOW
 
 class AlistService(QObject):
     """
@@ -137,6 +141,7 @@ class AlistService(QObject):
             result = subprocess.run(
                 [alist_path, "version"], 
                 capture_output=True, 
+                creationflags=creationflags,
                 text=True, 
                 timeout=5
             )

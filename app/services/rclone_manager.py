@@ -3,6 +3,7 @@ import os
 import platform
 import re
 import subprocess
+import sys
 from typing import Optional
 
 import httpx
@@ -12,6 +13,9 @@ from ..common.concurrent import TaskExecutor
 from ..common.config import cfg
 from ..common.utils import checkRcloneExist, getRclonePath, getSystemProxy
 
+creationflags = 0
+if sys.platform == "win32":
+    creationflags = subprocess.CREATE_NO_WINDOW
 
 class RcloneManager(QObject):
     """
@@ -100,7 +104,7 @@ class RcloneManager(QObject):
 
         try:
             result = subprocess.run(
-                [rclone_path, "version"], capture_output=True, text=True, timeout=5
+                [rclone_path, "version"], capture_output=True, text=True, timeout=5,creationflags=creationflags
             )
             version_info = result.stdout if result.returncode == 0 else result.stderr
             self.logMessageReady.emit(
@@ -124,7 +128,7 @@ class RcloneManager(QObject):
 
         try:
             result = subprocess.run(
-                [rclone_path, "version"], capture_output=True, text=True, timeout=5
+                [rclone_path, "version"], capture_output=True, text=True, timeout=5,creationflags=creationflags
             )
             
             if result.returncode != 0:
@@ -614,6 +618,7 @@ class RcloneManager(QObject):
             result = subprocess.run(
                 [rclone_path, "obscure", password],
                 capture_output=True,
+                creationflags=creationflags,
                 text=True,
                 timeout=5,
                 check=True,

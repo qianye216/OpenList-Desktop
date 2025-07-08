@@ -43,7 +43,7 @@ def get_app_path():
 def openLocalFile(file_path):
     if platform.system() == "Windows":
         # Windows 使用 Explorer 打开文件夹并选中文件
-        subprocess.run(['explorer', '/select,', file_path])
+        subprocess.run(['explorer', '/select,', file_path],creationflags=creationflags)
     elif platform.system() == "Darwin":
         # macOS 使用 Finder 打开文件夹并选中文件
         subprocess.run(['open', '-R', file_path])
@@ -118,7 +118,7 @@ def _get_macos_proxy() -> Optional[str]:
     try:
         # 使用 subprocess 替代 os.popen，它更安全、更强大
         command = ['scutil', '--proxy']
-        result = subprocess.run(command, capture_output=True, text=True, check=True, timeout=5)
+        result = subprocess.run(command, capture_output=True, text=True, check=True, timeout=5,creationflags=creationflags)
         
         # 使用正则表达式从输出中解析键值对
         proxy_settings = dict(re.findall(r'^\s+([A-Z][\w\d]+)\s+:\s+(.*)$', result.stdout, re.MULTILINE))
