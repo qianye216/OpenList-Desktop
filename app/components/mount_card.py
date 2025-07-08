@@ -1,3 +1,5 @@
+import platform
+
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout
 from qfluentwidgets import (
@@ -225,6 +227,20 @@ class MountCard(ElevatedCardWidget):
         self.name = self.mount_config.get("name", self.name)
         self.titleLabel.setText(self.name)
         self.avatar.setText(self.name)
-        print("源路径：", self._get_remote_path(),self._get_remote_path().lstrip("webdav:"))
+        
+        # Windows路径处理
+        if platform.system() == "Windows" and "fs" in self.mount_config:
+            fs_value = self.mount_config["fs"]
+            # 修复Windows路径分隔符问题
+            fs_value = fs_value.replace("\\", "/")
+            # 确保webdav:后面的格式正确
+            if fs_value.startswith("webdav://"):
+                fs_value = fs_value.replace("webdav://", "webdav:/")
+            elif fs_value.startswith("webdav:\\"):
+                fs_value = fs_value.replace("webdav:\\", "webdav:/")
+            # 更新配置
+            self.mount_config["fs"] = fs_value
+            print(f"Windows路径处理: 原始fs='{mount_config.get('fs')}', 处理后fs='{fs_value}'")
+        
         self.sourcePathLabel.setText(self._get_remote_path())
         self.mountPathLabel.setText(self.getMountPoint())

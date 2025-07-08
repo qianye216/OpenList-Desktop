@@ -521,6 +521,19 @@ class RcloneManager(QObject):
     
         # 构建API请求的 payload
         fs_value = mount_config["fs"]
+        
+        # Windows路径处理：将反斜杠替换为正斜杠
+        if platform.system() == "Windows" and fs_value:
+            # 修复Windows路径分隔符问题
+            fs_value = fs_value.replace("\\", "/")
+            # 确保webdav:后面只有一个斜杠
+            if fs_value.startswith("webdav://"):
+                fs_value = fs_value.replace("webdav://", "webdav:/")
+            elif fs_value.startswith("webdav:\\"):
+                fs_value = fs_value.replace("webdav:\\", "webdav:/")
+            # 日志输出调试信息
+            self.logMessageReady.emit(f"Windows路径处理: 原始fs='{mount_config['fs']}', 处理后fs='{fs_value}'")
+        
         payload = {
             "fs": fs_value,
             "mountPoint": mount_point_os,
@@ -600,7 +613,13 @@ class RcloneManager(QObject):
         # 这可以防止因 API 返回 {"remotes": null} 或其他意外格式而导致的 TypeError。
         if response and isinstance(response.get("remotes"), list):
             remotes_list = response["remotes"]
-            if "webdav" not in remotes_list:
+            # 输出调试信息
+            self.logMessageReady.emit(f"当前远程配置列表: {remotes_list}")
+            
+            # 检查是否存在webdav配置（不区分大小写，去除可能的空格）
+            webdav_exists = any(remote.strip().lower() == "webdav" for remote in remotes_list)
+            
+            if not webdav_exists:
                 self.logMessageReady.emit("未找到 'webdav' 远程配置，正在自动创建...")
                 self.create_webdav_remote("webdav")
             else:
@@ -611,7 +630,10 @@ class RcloneManager(QObject):
             if response:
                 error_info = response.get("error", f"API响应格式不正确: {response}")
                 self.logMessageReady.emit(f"检查 WebDAV 配置失败：{error_info}")
-            # 在无法确认远程列表的情况下，不执行任何操作，避免引入更多问题。
+            else:
+                # 如果响应为空，尝试创建webdav配置
+                self.logMessageReady.emit("无法获取远程配置列表，尝试创建 'webdav' 配置...")
+                self.create_webdav_remote("webdav")
 
     def _obscure_password(self, password: str) -> str:
         """使用rclone obscure命令加密密码"""

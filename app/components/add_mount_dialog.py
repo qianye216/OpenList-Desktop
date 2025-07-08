@@ -251,10 +251,23 @@ class AddMountDialog(MessageBoxBase):
 
     def get_mount_config(self) -> dict:
         """获取用户输入的挂载配置"""
+        import platform
+        
         cache_mode_map = {0: "off", 1: "minimal", 2: "writes", 3: "full"}
         remote_path = self.remotePathEdit.text().strip()
+        
+        # Windows路径处理：统一使用正斜杠
+        if platform.system() == "Windows":
+            remote_path = remote_path.replace("\\", "/")
 
-        fs_path = f"webdav:{remote_path}" if remote_path != "/" else "webdav:"
+        # 构建fs路径，确保格式正确
+        if remote_path and remote_path != "/":
+            # 确保路径以斜杠开头
+            if not remote_path.startswith("/"):
+                remote_path = "/" + remote_path
+            fs_path = f"webdav:{remote_path}"
+        else:
+            fs_path = "webdav:/"
 
         return {
             "name": self.nameEdit.text().strip(),
