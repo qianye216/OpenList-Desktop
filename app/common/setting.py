@@ -1,9 +1,10 @@
 """
 Author: qianye
-Date: 2025-06-30 12:20:29
-LastEditTime: 2025-07-04 11:28:07
+Date: 2025-07-05 06:46:15
+LastEditTime: 2025-07-08 09:44:57
 Description:
 """
+
 
 # coding: utf-8
 from pathlib import Path
@@ -15,9 +16,9 @@ DEBUG = "__compiled__" not in globals()
 DEBUG = False
 
 
-YEAR = 2023
+YEAR = 2025
 AUTHOR = "qianye"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 APP_NAME = "OpenList Desktop"
 HELP_URL = "https://github.com/qianye216/OpenList-Desktop/wiki"
 DOC_URL = "https://github.com/qianye216/OpenList-Desktop/wiki"
@@ -32,7 +33,7 @@ RCLONE_GITHUB_URL = "https://github.com/rclone/rclone"
 RCLONE_UPDATE_URL = "https://api.github.com/repos/rclone/rclone/releases/latest"
 UPDATE_URL = "https://api.github.com/repos/qianye216/OpenList-Desktop/releases/latest"
 FEEDBACK_URL = "https://github.com/qianye216/OpenList-Desktop/issues"
-SUPPORT_URL = "https://github.com/qianye216/OpenList-Desktop/issues"
+SUPPORT_URL = "https://afdian.com/a/qianyei"
 
 
 CONFIG_FOLDER = (
