@@ -517,7 +517,7 @@ class RcloneManager(QObject):
             mount_point_os = mount_point
 
         # 构建API请求的 payload
-        fs_value = mount_config["fs"].strip('"\'') # [修复] 移除fs值两端的引号
+        fs_value = mount_config["fs"]
         payload = {
             "fs": fs_value,
             "mountPoint": mount_point_os,
