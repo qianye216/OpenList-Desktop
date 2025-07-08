@@ -17,12 +17,9 @@ import psutil
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
 
-if platform.system() == "Windows":
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-    startupinfo.wShowWindow = subprocess.SW_HIDE
-else:
-    startupinfo = None
+creationflags = 0
+if sys.platform == "win32":
+    creationflags = subprocess.CREATE_NO_WINDOW
 
 def get_app_path():
     """
@@ -155,7 +152,7 @@ def openConfigFile(file_path):
         subprocess.run(['open',"-a", "TextEdit",file_path])
         
     else:
-        subprocess.run(['start','notepad',file_path],startupinfo=startupinfo,shell=True)
+        subprocess.run(['start','notepad',file_path],creationflags=creationflags)
 
 def openUrl(url: str):
     if not url.startswith("http"):
@@ -305,8 +302,7 @@ def killAlistProcess():
                     # 使用Popen执行命令
                     process = subprocess.run(
                         cmd,
-                        startupinfo=startupinfo,
-                        creationflags=subprocess.CREATE_NO_WINDOW
+                        creationflags=creationflags
                     )
                     
                 else:
@@ -390,8 +386,7 @@ def killRcloneProcess():
             # 使用Popen执行命令
             process = subprocess.run(
                 cmd,
-                startupinfo=startupinfo,
-                creationflags=subprocess.CREATE_NO_WINDOW
+                creationflags=creationflags
             )
             
         else:
