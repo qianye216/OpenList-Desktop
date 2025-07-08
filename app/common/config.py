@@ -160,11 +160,11 @@ class Config(QConfig):
     """Config of application"""
 
     # 个性化设置
-    micaEnabled = ConfigItem("MainWindow", "MicaEnabled", isWin11(), BoolValidator())
+    micaEnabled = ConfigItem("MainWindow", "MicaEnabled", False, BoolValidator())
     dpiScale = OptionsConfigItem(
         "MainWindow",
         "DpiScale",
-        1,
+        "Auto",
         OptionsValidator([1, 1.25, 1.5, 1.75, 2, "Auto"]),
         restart=True,
     )
