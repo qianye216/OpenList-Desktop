@@ -133,15 +133,12 @@ class MainWindow(MSFluentWindow):
         window_size_str = cfg.get(cfg.windowSize)
         try:
             width, height = map(int, window_size_str.split(","))
-            # 确保窗口大小在合理范围内
-            width = max(760, width)  # 最小宽度760
-            height = max(500, height)  # 最小高度500
+            
             self.resize(width, height)
         except (ValueError, AttributeError):
             # 如果配置格式错误，使用默认大小
             self.resize(960, 700)
 
-        self.setMinimumWidth(760)
         self.setWindowIcon(QIcon(":/app/images/logo.png"))
         self.setWindowTitle("OpenList-Desktop")
 
