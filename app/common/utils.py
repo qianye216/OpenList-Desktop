@@ -152,7 +152,7 @@ def openConfigFile(file_path):
         subprocess.run(['open',"-a", "TextEdit",file_path])
         
     else:
-        subprocess.run(['start','notepad',file_path],creationflags=creationflags)
+        subprocess.run(['start','notepad',file_path],creationflags=creationflags,shell=True)
 
 def openUrl(url: str):
     if not url.startswith("http"):
