@@ -91,6 +91,16 @@ class MainWindow(MSFluentWindow):
                 | Qt.WindowType.CustomizeWindowHint
             )
 
+        try:
+            window_size_str = cfg.get(cfg.windowSize)
+            width, height = map(int, window_size_str.split(","))
+            self.resize(width, height)
+        except (ValueError, AttributeError):
+            # 如果配置格式错误或不存在，使用默认大小
+            self.resize(960, 700)
+            
+        self._centerWindow()
+
         self.onInitFinished()
 
         # 启动监听器
@@ -129,15 +139,6 @@ class MainWindow(MSFluentWindow):
         """
         初始化窗口设置，包括窗口大小记忆功能
         """
-        # 读取保存的窗口大小配置
-        window_size_str = cfg.get(cfg.windowSize)
-        try:
-            width, height = map(int, window_size_str.split(","))
-            
-            self.resize(width, height)
-        except (ValueError, AttributeError):
-            # 如果配置格式错误，使用默认大小
-            self.resize(960, 700)
 
         self.setWindowIcon(QIcon(":/app/images/logo.png"))
         self.setWindowTitle("OpenList-Desktop")
@@ -153,11 +154,13 @@ class MainWindow(MSFluentWindow):
         self.splashScreen.setIconSize(QSize(106, 106))
         self.splashScreen.raise_()
 
+        QApplication.processEvents()
+        
+    def _centerWindow(self):
+        """将窗口移动到主屏幕中央"""
         desktop = QApplication.primaryScreen().availableGeometry()
         w, h = desktop.width(), desktop.height()
         self.move(w // 2 - self.width() // 2, h // 2 - self.height() // 2)
-
-        QApplication.processEvents()
 
     def connectSignalToSlot(self):
         """连接信号到槽函数"""
@@ -226,6 +229,8 @@ class MainWindow(MSFluentWindow):
         if cfg.get(cfg.checkUpdateAtStartUp):
             # 延迟5秒后检查更新
             QTimer.singleShot(5000, lambda: self.checkUpdate(True))
+
+    
 
     def showWindow(self):
         """一个统一的显示窗口方法"""
