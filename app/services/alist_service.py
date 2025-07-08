@@ -204,7 +204,8 @@ class AlistService(QObject):
 
         config_file = data_path / "config.json"
         if config_file.exists() and config_file.is_file():
-            QDesktopServices.openUrl(QUrl.fromLocalFile(str(config_file)))
+            url = QUrl.fromLocalFile(config_file.resolve().as_posix())
+            QDesktopServices.openUrl(url)
         else:
             self.operationFailed.emit("未找到配置文件！")
 
